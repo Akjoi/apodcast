@@ -3,7 +3,9 @@ package com.example.apodcast.ui.main
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
@@ -14,16 +16,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
+import com.example.apodcast.Destination
 import com.example.apodcast.entities.MainScreenState
 import com.example.apodcast.entities.TrackPreview
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
-fun MainScreen(state: StateFlow<MainScreenState>) {
+fun MainScreen(state: StateFlow<MainScreenState>, onTrackClick: (trackId: String) -> Unit) {
     val screenState by state.collectAsState()
 
 
@@ -33,7 +34,8 @@ fun MainScreen(state: StateFlow<MainScreenState>) {
     }
     if (screenState.musicList != null) {
         TopicRow(
-            screenState.musicList!!, color = Color.Yellow
+            screenState.musicList!!, color = Color.Yellow,
+            onTrackClick
         )
         return
     }
@@ -43,16 +45,16 @@ fun MainScreen(state: StateFlow<MainScreenState>) {
 }
 
 @Composable
-fun TopicRow(trackList: List<TrackPreview>, color: Color) {
-    LazyRow {
+fun TopicRow(trackList: List<TrackPreview>, color: Color, onTrackClick: (trackId: String) -> Unit) {
+    LazyColumn {
         items(trackList) { item: TrackPreview ->
-            TopicItem(item = item, color = color)
+            TopicItem(item = item, color = color, onTrackClick)
         }
     }
 }
 
 @Composable
-fun TopicItem(item: TrackPreview, color: Color) {
+fun TopicItem(item: TrackPreview, color: Color, onTrackClick: (trackId: String) -> Unit) {
     Card(
         modifier = Modifier
             .width(256.dp)
@@ -63,6 +65,9 @@ fun TopicItem(item: TrackPreview, color: Color) {
             modifier = Modifier
                 .background(color = color)
                 .padding(6.dp)
+                .clickable {
+                    onTrackClick("track/${item.id}")
+                }
         ) {
             Image(painter = rememberAsyncImagePainter(item.image), contentDescription = "", modifier = Modifier.fillMaxWidth())
             Text(text = item.title)

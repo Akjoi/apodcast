@@ -10,11 +10,7 @@ sealed interface Destination {
 
     object TrackPage: Destination {
         override val route: String
-            get() = "track"
+            get() = "track/{track_id}"
     }
 
-    object NowPlaying: Destination {
-        override val route: String
-            get() = "now_playing"
-    }
 }
